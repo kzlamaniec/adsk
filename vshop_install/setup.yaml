@@ -1,0 +1,43 @@
+---
+- hosts: app_nodes
+  become: yes
+  vars:
+    app_url: https://github.com/kzlamaniec/vouchershop/releases/download/v1.0/voucherShop.jar
+    java_rpm_url: https://corretto.aws/downloads/latest/amazon-corretto-11-x64-al2-jre.rpm
+    app_dest_dir: /opt/voucherShop
+    app_user: voucherShop
+  tasks:
+    - name: Install java runtime
+      yum: 
+        name: "{{ java_rpm_url }}"
+
+    - name: Create user
+      user:
+        name: "{{ app_user }}"
+
+    - name: Define dir structure
+      file: 
+        path: "{{ app_dest_dir }}"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        state: directory
+
+    - name: Download app jar file
+      get_url:
+        url: "{{ app_url }}"
+        dest: "{{ app_dest_dir }}"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+
+    - name: Put systemd config
+      template:
+        src: files/systemd/voucherShop.service
+        dest: /etc/systemd/system/voucherShop.service
+
+    - name: Enable on boot and start app
+      systemd:
+         name: voucherShop
+         daemon_reload: yes
+         enabled: yes
+         state: restarted
+        

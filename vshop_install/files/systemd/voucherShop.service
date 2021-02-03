@@ -1,0 +1,12 @@
+[Unit]
+Description=Voucher Shop App
+After=network-online.target
+
+[Service]
+Type=simple
+User={{app_user}}
+ExecStart=/usr/bin/java -jar {{app_dest_dir}}/voucherShop.jar
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
