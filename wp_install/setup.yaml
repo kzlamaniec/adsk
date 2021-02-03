@@ -1,0 +1,97 @@
+---
+- 
+  hosts:  wp_nodes
+  become: yes
+  vars:
+    my_fav_packages:
+      - cowsay
+      - mc
+      - tree
+    EPEL_RPM_URL: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    PHP_REMI_RPM_URL: https://rpms.remirepo.net/enterprise/remi-release-7.rpm
+    WP_ZIP_URL: https://wordpress.org/latest.zip
+    WP_DEST_DIR: /var/www/blog
+    DB_NAME: blog_kz
+    DB_USER: kz
+    DB_PASS: 'bloger@'
+  tasks:
+    - name: "Preview what is aggregated"
+      debug:
+        msg: "{{ ansible_facts.os_family }}" 
+    - name: "Create hello world file"
+      file: 
+        path: ~/hello.txt
+        state: touch
+    - name: "Put maria DB cfg into /ect/yum.repos.d"
+      copy:
+        src: files/mariaDB.repo
+        dest: /etc/yum.repos.d/mariaDB.repo
+    - name: "Install favourite packages"
+      yum:
+        name:   "{{ my_fav_packages }}"       
+    - name: "Install db packages"
+      yum:
+        name:
+          - MySQL-python
+          - MariaDB-server
+          - MariaDB-client
+    - name: "Install EPEL package"
+      yum:
+        name: "{{ EPEL_RPM_URL }}"
+    - name: "Install php remi repo"
+      yum:
+        name: "{{ PHP_REMI_RPM_URL }}"
+    - name: "Download wordpress"
+      get_url:
+        url: "{{ WP_ZIP_URL }}"
+        dest: /tmp/wp.zip
+    - name: Create a directory if it does not exist
+      file: 
+        path: "{{ WP_DEST_DIR }}"
+        state: directory
+    - name: "Unarchive wp"
+      unarchive:
+        src: /tmp/wp.zip
+        dest: "{{ WP_DEST_DIR }}"
+        remote_src: yes
+    - name: "Start database server"
+      service:
+        name: mariadb
+        state: started
+    - name: "Create blog database"
+      mysql_db:
+        name: "{{ DB_NAME }}"
+        state: present
+    - name: "Create database user"
+      mysql_user: 
+        name: "{{ DB_USER }}"
+        password: "{{ DB_PASS }}"
+        priv: "{{ DB_NAME ~ '.*:ALL' }}"
+        state: present
+    - name: "Install php dependencies"
+      yum: 
+        name: 
+          - php74
+          - php74-php
+          - php74-php-mysqlnd
+          - php74-php-pecl-mysql
+    - name: "Copy apache vhost to /etc"
+      template:
+        src: files/vhost.conf
+        dest: /etc/httpd/conf.d/blog.conf
+    - name: "Copy wp config"
+      template:
+        src: files/wp-config.php
+        dest: "{{ WP_DEST_DIR }}/wordpress/wp-config.php"
+    - name: "Restart httpd" 
+      service:
+        name: httpd
+        state: restarted
+
+
+
+
+
+
+
+ 
