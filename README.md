@@ -9,4 +9,10 @@ Wykorzystywane narzadzia:
 * epel repo
 * java runtime env
 * yaml
-* nginx
+
+Nginx as load balancer
+
+Stats
+* telegraf
+* influx
+* grafana
