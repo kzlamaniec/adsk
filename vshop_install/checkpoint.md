@@ -12,6 +12,7 @@ ssh-add ~/.ssh/id_student #ściezka do  klucza
 * vouchershop.jar // public access
 
 ## to do
+
 - [x] ssh access
 - [x] install java runtime env
     - sudo yum install https://corretto.aws/downloads/latest/amazon-corretto-11-x64-al2-jre.rpm
@@ -25,3 +26,16 @@ ssh-add ~/.ssh/id_student #ściezka do  klucza
 - [x] start on boot
 
 - [ ] automate via ansible
+
+
+## todo
+
+- install app_nodes
+
+- [ ] EPEL REPO
+- [ ] install nginx
+- [ ] configure proxy to app node
+- [ ] declare instalation via ansible
+- [ ] reconfigure proxy -> lb
+- [ ] add 1 more app node
+- [ ] test lb settings

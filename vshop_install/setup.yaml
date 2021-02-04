@@ -40,4 +40,30 @@
          daemon_reload: yes
          enabled: yes
          state: restarted
-        
+
+- hosts: web_nodes
+  become: yes
+  vars: 
+    epel_rm_url: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+    app_nodes: 
+      - 172.31.44.25:8080
+      - 172.31.37.192:8080
+  tasks:
+    - name: Install epel repo  
+      yum:
+        name: "{{ epel_rm_url }}" 
+
+    - name: Install nginx
+      yum:
+        name: nginx
+
+    - name: Punt nginx config into /etc
+      template:
+        src: files/nginx/voucherShop.conf
+        dest: /etc/nginx/conf.d/voucherShop.conf
+
+    - name: Restart nginx
+      systemd:
+        name: nginx
+        enabled: yes
+        state: restarted
