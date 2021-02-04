@@ -2,7 +2,7 @@
 
 Automatyzacja instalacji aplikacji webowych.
 
-*Wykorzystywane narzadzia:*
+Wykorzystywane narzadzia:
 
   * ansible
   * aws vm
