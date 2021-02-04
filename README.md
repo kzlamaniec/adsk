@@ -2,17 +2,17 @@
 
 Automatyzacja instalacji aplikacji webowych.
 
-Wykorzystywane narzadzia:
+*Wykorzystywane narzadzia:*
 
-* ansible
-* aws vm
-* epel repo
-* java runtime env
-* yaml
+  * ansible
+  * aws vm
+  * epel repo
+  * java runtime env
+  * yaml
 
-* Nginx as load balancer
+  Nginx as load balancer
 
-* Stats:
-* telegraf
-* influx
-* grafana
+  Stats:
+  * telegraf
+  * influx
+  * grafana
