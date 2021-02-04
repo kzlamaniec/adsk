@@ -12,7 +12,7 @@ Wykorzystywane narzadzia:
 
 * Nginx as load balancer
 
-* Stats
-** telegraf
-** influx
-** grafana
+* Stats:
+* telegraf
+* influx
+* grafana
