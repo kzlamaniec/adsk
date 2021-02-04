@@ -10,9 +10,9 @@ Wykorzystywane narzadzia:
 * java runtime env
 * yaml
 
-*Nginx as load balancer
+* Nginx as load balancer
 
-*Stats
+* Stats
 ** telegraf
 ** influx
 ** grafana
