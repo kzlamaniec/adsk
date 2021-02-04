@@ -46,8 +46,9 @@
   vars: 
     epel_rm_url: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
     app_nodes: 
-      - 172.31.44.25:8080
-      - 172.31.37.192:8080
+      #- 172.31.44.25:8080
+      #- 172.31.37.192:8080
+      - 172.31.28.51:3000
   tasks:
     - name: Install epel repo  
       yum:
@@ -67,3 +68,92 @@
         name: nginx
         enabled: yes
         state: restarted
+
+- hosts: stats_db
+  become: yes
+  vars: 
+    influx_db_rpm_url: https://dl.influxdata.com/influxdb/releases/influxdb-1.8.4.x86_64.rpm
+    telegraf_rpm_url: https://dl.influxdata.com/telegraf/releases/telegraf-1.16.2-1.x86_64.rpm
+    grafana_rpm_url: https://dl.grafana.com/oss/release/grafana-7.3.7-1.x86_64.rpm
+    metrics_db_name: infrastructure
+    grafana_url: http://127.0.0.1:3000
+    grafana_user: admin
+    grafana_pw: ReallySecretPassword
+  tasks:
+    - name: Install telegraf
+      yum:
+        name: "{{ telegraf_rpm_url }}"
+
+    - name: Install influxDB
+      yum:
+        name: "{{ influx_db_rpm_url }}"
+
+    - name: Install grafana
+      yum:
+        name: "{{ grafana_rpm_url }}"
+
+    - name: Put telegraf config to /ect/telegraf
+      template:
+        src: files/telegraf/telegraf.conf
+        dest: /etc/telegraf/telegraf.conf
+
+    - name: Start services influx
+      service:
+        name: influxdb
+        state: started
+    - yum:
+        name: python2-pip
+
+    - name: Install influx dependencies
+      pip: 
+        name: influxdb
+
+    - name: Create db for metrics
+      community.general.influxdb_database:
+        database_name: "{{ metrics_db_name }}" 
+    
+    - name: Start services telegraf
+      service:
+        name: telegraf
+        state: restarted
+
+    - name: Put grafana.ini to /ect/garfana
+      template:
+        src: files/grafana/grafana.ini
+        dest: /etc/grafana/grafana.ini
+
+    - name: Start services grafana
+      service:
+        name: grafana-server
+        state: restarted
+       
+    - name: Create influxdb as grafana data source
+      community.grafana.grafana_datasource:
+        name: "InfluxDB"
+        grafana_url: "{{ grafana_url }}"
+        grafana_user: "{{ grafana_user }}"
+        grafana_password: "{{ grafana_pw }}"
+        org_id: "1"
+        ds_type: "influxdb"
+        ds_url: "http://127.0.0.1:8086"
+        database: "{{ metrics_db_name }}"
+        time_interval: ">10s"
+
+    - name: Copy dashboard config to /tmp
+      copy:
+        src: files/grafana/dashboard.json
+        dest: /tmp/dashboard.json
+
+    - name: Import grafana dashboard
+      community.grafana.grafana_dashboard:
+        grafana_url: "{{ grafana_url }}"
+        grafana_user: "{{ grafana_user }}"
+        grafana_password: "{{ grafana_pw }}"
+        state: present
+        commit_message: Updated by ansible
+        overwrite: yes
+        path: /tmp/dashboard.json
+
+      
+
+    

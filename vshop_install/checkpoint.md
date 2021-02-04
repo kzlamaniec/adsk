@@ -28,14 +28,20 @@ ssh-add ~/.ssh/id_student #ściezka do  klucza
 - [ ] automate via ansible
 
 
-## todo
+## todo lb
 
 - install app_nodes
 
-- [ ] EPEL REPO
-- [ ] install nginx
-- [ ] configure proxy to app node
-- [ ] declare instalation via ansible
-- [ ] reconfigure proxy -> lb
-- [ ] add 1 more app node
-- [ ] test lb settings
+- [x] EPEL REPO
+- [x] install nginx
+- [x] configure proxy to app node
+- [x] declare instalation via ansible
+- [x] reconfigure proxy -> lb
+- [x] add 1 more app node
+- [x] test lb settings
+
+## to do stats
+
+ -  [] wget https://dl.influxdata.com/telegraf/releases/telegraf-1.16.2-1.x86_64.rpm
+
+- wget https://dl.influxdata.com/influxdb/releases/influxdb-1.8.4.x86_64.rpm
